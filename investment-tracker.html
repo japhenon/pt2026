@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jonathan's Investment Tracker</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --bg-tertiary: #eeede9;
+    --text: #1a1a18;
+    --text-secondary: #5f5e5a;
+    --text-tertiary: #888780;
+    --border: rgba(0,0,0,0.12);
+    --border-mid: rgba(0,0,0,0.22);
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --green-text: #085041;
+    --blue: #378ADD;
+    --blue-bg: #E6F1FB;
+    --blue-text: #0C447C;
+    --amber: #BA7517;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --red: #E24B4A;
+    --red-bg: #FCEBEB;
+    --red-text: #501313;
+    --gray-bg: #F1EFE8;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg-secondary: #252523;
+      --bg-tertiary: #2c2c2a;
+      --text: #f0ede6;
+      --text-secondary: #b4b2a9;
+      --text-tertiary: #888780;
+      --border: rgba(255,255,255,0.10);
+      --border-mid: rgba(255,255,255,0.20);
+      --green-bg: #04342C;
+      --green-text: #9FE1CB;
+      --blue-bg: #042C53;
+      --blue-text: #B5D4F4;
+      --amber-bg: #412402;
+      --amber-text: #FAC775;
+      --red-bg: #501313;
+      --red-text: #F7C1C1;
+      --gray-bg: #2C2C2A;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  h1 { font-size: 22px; font-weight: 500; color: var(--text); }
+  .subtitle { font-size: 13px; color: var(--text-tertiary); margin-top: 3px; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    margin: 2rem 0 0.75rem;
+  }
+  .card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin-bottom: 10px;
+  }
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; }
+  .metric { background: var(--bg-secondary); border-radius: var(--radius); padding: 0.875rem 1rem; }
+  .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .metric-val { font-size: 22px; font-weight: 500; }
+  .metric-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    font-size: 11px; font-weight: 500; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 6px 10px; text-align: left;
+    border-bottom: 0.5px solid var(--border);
+    white-space: nowrap;
+  }
+  th.num { text-align: right; }
+  td { padding: 10px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-secondary); }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 2px 7px; border-radius: var(--radius); white-space: nowrap;
+  }
+  .badge-owned { background: var(--green-bg); color: var(--green-text); }
+  .badge-starter { background: var(--blue-bg); color: var(--blue-text); }
+  .badge-watch { background: var(--bg-secondary); color: var(--text-secondary); border: 0.5px solid var(--border-mid); }
+
+  .tier-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+  .t1 { background: #1D9E75; }
+  .t2 { background: #378ADD; }
+  .t3 { background: #888780; }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .neu { color: var(--text-tertiary); }
+
+  .ticker-sym { font-weight: 500; font-size: 14px; }
+  .ticker-name { font-size: 12px; color: var(--text-secondary); }
+
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .ftag {
+    font-size: 11px; padding: 3px 12px; border-radius: 20px;
+    cursor: pointer; border: 0.5px solid var(--border-mid);
+    background: transparent; color: var(--text-secondary);
+    transition: all 0.15s; font-family: inherit;
+  }
+  .ftag.active { background: var(--blue-bg); color: var(--blue-text); border-color: transparent; }
+  .ftag:hover { background: var(--bg-secondary); }
+
+  .add-row { display: flex; gap: 8px; margin-top: 0.75rem; flex-wrap: wrap; align-items: center; }
+  input[type=text], input[type=number] {
+    background: var(--bg); border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius); padding: 7px 10px;
+    font-size: 13px; color: var(--text); font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--blue); }
+  button {
+    background: var(--bg); border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius); padding: 7px 14px;
+    font-size: 13px; color: var(--text); cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  button:hover { background: var(--bg-secondary); }
+  button:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--blue-bg); color: var(--blue-text);
+    border-color: transparent; font-weight: 500;
+  }
+  .btn-primary:hover { opacity: 0.85; background: var(--blue-bg); }
+
+  .goal-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .goal-name { font-size: 14px; font-weight: 500; }
+  .goal-amounts { font-size: 12px; color: var(--text-secondary); }
+  .progress-track { width: 100%; height: 7px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .goal-meta { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--text-tertiary); }
+  .goal-inputs { display: flex; gap: 10px; margin-top: 0.75rem; flex-wrap: wrap; }
+  .goal-input-group { flex: 1; min-width: 200px; }
+  .goal-input-group label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+  .goal-input-group input { width: 100%; }
+
+  .note {
+    font-size: 12px; color: var(--text-tertiary);
+    padding: 0.75rem 0 0; border-top: 0.5px solid var(--border);
+    margin-top: 1rem; line-height: 1.6;
+  }
+  .header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
+  .last-updated { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); margin-bottom: 0.5rem; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .edit-price { font-size: 11px; color: var(--blue); cursor: pointer; background: none; border: none; padding: 0; margin-left: 4px; }
+  .edit-price:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header-row">
+    <div>
+      <h1>Jonathan's investment tracker</h1>
+      <p class="subtitle">Tech/AI + Defense watchlist · Goals 1 &amp; 2</p>
+    </div>
+    <div style="text-align:right;">
+      <p class="last-updated" id="last-updated">Last updated: —</p>
+      <button class="btn-primary" onclick="saveData()" style="margin-top:6px;">💾 Save progress</button>
+    </div>
+  </div>
+
+  <div class="section-label">Portfolio summary</div>
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="metric-label">Invested value</div>
+      <div class="metric-val" id="total-val">$0.00</div>
+      <div class="metric-sub" id="held-count">0 positions held</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Watchlist size</div>
+      <div class="metric-val" id="watch-count">0</div>
+      <div class="metric-sub">stocks tracked</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Next purchase</div>
+      <div class="metric-val" id="next-buy">—</div>
+      <div class="metric-sub">starter pick</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Tax reserve</div>
+      <div class="metric-val">27%</div>
+      <div class="metric-sub">set aside from gains</div>
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:2rem;">
+    <div class="section-label" style="margin:0;">Watchlist</div>
+    <div class="filter-row" style="margin:0;">
+      <button class="ftag active" onclick="filterList('all',this)">All</button>
+      <button class="ftag" onclick="filterList('owned',this)">Owned</button>
+      <button class="ftag" onclick="filterList('tech',this)">Tech / AI</button>
+      <button class="ftag" onclick="filterList('defense',this)">Defense</button>
+    </div>
+  </div>
+
+  <div class="legend" style="margin-top:0.75rem;">
+    <span class="legend-item"><span class="tier-dot t1"></span>Tier 1 — moderate</span>
+    <span class="legend-item"><span class="tier-dot t2"></span>Tier 2 — mod-high</span>
+    <span class="legend-item"><span class="tier-dot t3"></span>Tier 3 — lower risk</span>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker</th>
+            <th>Company</th>
+            <th>Sector</th>
+            <th>Tier</th>
+            <th class="num">Price ($)</th>
+            <th class="num">Shares</th>
+            <th class="num">Value</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="watchlist-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="add-row">
+    <input type="text" id="new-ticker" placeholder="Ticker (e.g. AVAV)" style="width:130px; text-transform:uppercase;" maxlength="6" />
+    <input type="text" id="new-name" placeholder="Company name" style="width:180px;" />
+    <input type="number" id="new-shares" placeholder="Shares owned" min="0" step="0.0001" style="width:140px;" />
+    <input type="number" id="new-price" placeholder="Current price" min="0" step="0.01" style="width:130px;" />
+    <button onclick="addTicker()">+ Add to watchlist</button>
+  </div>
+
+  <div class="section-label">Savings goals</div>
+
+  <div class="card">
+    <div class="goal-top">
+      <span class="goal-name">🖨️ Goal 1 — Snapmaker U1</span>
+      <span class="goal-amounts"><span id="g1-saved-lbl">$135</span> of $900</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="g1-bar" style="width:15%; background:#1D9E75;"></div></div>
+    <div class="goal-meta">
+      <span id="g1-pct">15% saved</span>
+      <span>Target: ~10 months · HYSA + survey income</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="goal-top">
+      <span class="goal-name">❤️ Goal 2 — Surgery fund</span>
+      <span class="goal-amounts"><span id="g2-saved-lbl">$0</span> of $15,000</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="g2-bar" style="width:0%; background:#378ADD;"></div></div>
+    <div class="goal-meta">
+      <span id="g2-pct">0% saved</span>
+      <span>Target: 3–4 years · Index ETFs + individual stocks</span>
+    </div>
+  </div>
+
+  <div class="goal-inputs">
+    <div class="goal-input-group">
+      <label>Goal 1 saved so far ($)</label>
+      <input type="number" id="g1-input" value="135" min="0" oninput="updateGoals()" />
+    </div>
+    <div class="goal-input-group">
+      <label>Goal 2 saved so far ($)</label>
+      <input type="number" id="g2-input" value="0" min="0" oninput="updateGoals()" />
+    </div>
+  </div>
+
+  <p class="note">
+    ⚠️ Prices are entered manually — update them whenever you check your brokerage.
+    This file saves data to your browser's local storage when you click "Save progress."
+    To back up, copy this HTML file to a safe location periodically.<br><br>
+    <strong>Disclaimer:</strong> This tracker is for personal education and record-keeping only.
+    It does not constitute financial advice. Always verify prices and consult a licensed advisor before trading.
+  </p>
+
+</div>
+
+<script>
+const DEFAULT_STOCKS = [
+  { ticker:'NVDA',  name:'Nvidia',               sector:'tech',    tier:1, price:131.08, shares:0.267, status:'owned',  starter:false },
+  { ticker:'GOOGL', name:'Alphabet (Google)',     sector:'tech',    tier:1, price:172.45, shares:0,     status:'watch',  starter:true  },
+  { ticker:'PLTR',  name:'Palantir Technologies', sector:'both',    tier:2, price:124.62, shares:0,     status:'watch',  starter:true  },
+  { ticker:'RTX',   name:'RTX Corporation',       sector:'defense', tier:1, price:200.06, shares:0,     status:'watch',  starter:false },
+  { ticker:'AVAV',  name:'AeroVironment',         sector:'defense', tier:2, price:198.34, shares:0,     status:'watch',  starter:false },
+  { ticker:'GLW',   name:'Corning',               sector:'tech',    tier:3, price:48.22,  shares:0,     status:'watch',  starter:false },
+  { ticker:'KTOS',  name:'Kratos Defense',        sector:'defense', tier:2, price:31.44,  shares:0,     status:'watch',  starter:false },
+];
+
+const TIER_LABELS = { 1:'Moderate', 2:'Mod-High', 3:'Lower risk' };
+const TIER_CLASSES = { 1:'t1', 2:'t2', 3:'t3' };
+const SECTOR_LABELS = { tech:'Tech / AI', defense:'Defense', both:'AI + Defense' };
+
+let stocks = [];
+let activeFilter = 'all';
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('jonathan_tracker_v1');
+    if (saved) {
+      const data = JSON.parse(saved);
+      stocks = data.stocks || DEFAULT_STOCKS;
+      document.getElementById('g1-input').value = data.g1 || 135;
+      document.getElementById('g2-input').value = data.g2 || 0;
+      document.getElementById('last-updated').textContent = 'Last updated: ' + (data.updated || '—');
+    } else {
+      stocks = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+    }
+  } catch(e) {
+    stocks = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+  }
+  updateGoals();
+  renderTable(getFiltered());
+}
+
+function saveData() {
+  const now = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  const data = {
+    stocks,
+    g1: document.getElementById('g1-input').value,
+    g2: document.getElementById('g2-input').value,
+    updated: now
+  };
+  localStorage.setItem('jonathan_tracker_v1', JSON.stringify(data));
+  document.getElementById('last-updated').textContent = 'Last updated: ' + now;
+  const btn = document.querySelector('.btn-primary');
+  btn.textContent = '✓ Saved!';
+  setTimeout(() => btn.textContent = '💾 Save progress', 2000);
+}
+
+function getFiltered() {
+  if (activeFilter === 'owned') return stocks.filter(s => s.status === 'owned');
+  if (activeFilter === 'tech') return stocks.filter(s => s.sector === 'tech' || s.sector === 'both');
+  if (activeFilter === 'defense') return stocks.filter(s => s.sector === 'defense' || s.sector === 'both');
+  return stocks;
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('watchlist-body');
+  tbody.innerHTML = '';
+
+  let totalVal = 0;
+  let heldCount = 0;
+  let starterPick = '—';
+
+  stocks.forEach(s => {
+    if (s.status === 'owned' && s.shares > 0) {
+      totalVal += s.price * s.shares;
+      heldCount++;
+    }
+    if (s.starter && s.status === 'watch' && starterPick === '—') starterPick = s.ticker;
+  });
+
+  document.getElementById('total-val').textContent = '$' + totalVal.toFixed(2);
+  document.getElementById('held-count').textContent = heldCount + ' position' + (heldCount !== 1 ? 's' : '') + ' held';
+  document.getElementById('watch-count').textContent = stocks.length;
+  document.getElementById('next-buy').textContent = starterPick;
+
+  data.forEach((s, i) => {
+    const val = s.price * s.shares;
+    let badge = '';
+    if (s.status === 'owned') badge = '<span class="badge badge-owned">Owned</span>';
+    else if (s.starter) badge = '<span class="badge badge-starter">Starter pick</span>';
+    else badge = '<span class="badge badge-watch">Watching</span>';
+
+    const globalIdx = stocks.indexOf(s);
+
+    const row = document.createElement('tr');
+    row.dataset.sector = s.sector;
+    row.dataset.status = s.status;
+    row.innerHTML = `
+      <td><span class="ticker-sym">${s.ticker}</span></td>
+      <td><span class="ticker-name">${s.name}</span></td>
+      <td style="font-size:12px;color:var(--text-secondary);">${SECTOR_LABELS[s.sector] || s.sector}</td>
+      <td><span class="tier-dot ${TIER_CLASSES[s.tier]}"></span><span style="font-size:12px;">${TIER_LABELS[s.tier]}</span></td>
+      <td class="num">
+        <span id="price-${globalIdx}">$${s.price.toFixed(2)}</span>
+        <button class="edit-price" onclick="editPrice(${globalIdx})" title="Update price">✎</button>
+      </td>
+      <td class="num">
+        <input type="number" value="${s.shares > 0 ? s.shares : ''}" min="0" step="0.0001"
+          placeholder="0" style="width:70px; text-align:right; font-size:12px;"
+          onchange="updateShares(${globalIdx}, this.value)" />
+      </td>
+      <td class="num" id="val-${globalIdx}">${val > 0 ? '$' + val.toFixed(2) : '—'}</td>
+      <td>${badge}</td>
+      <td><button onclick="removeStock(${globalIdx})" style="font-size:11px;padding:2px 7px;color:var(--text-tertiary);">✕</button></td>`;
+    tbody.appendChild(row);
+  });
+}
+
+function editPrice(idx) {
+  const s = stocks[idx];
+  const newPrice = prompt('Enter current price for ' + s.ticker + ':', s.price.toFixed(2));
+  if (newPrice !== null && !isNaN(parseFloat(newPrice))) {
+    stocks[idx].price = parseFloat(newPrice);
+    renderTable(getFiltered());
+  }
+}
+
+function updateShares(idx, val) {
+  const shares = parseFloat(val) || 0;
+  stocks[idx].shares = shares;
+  stocks[idx].status = shares > 0 ? 'owned' : 'watch';
+  renderTable(getFiltered());
+}
+
+function removeStock(idx) {
+  if (confirm('Remove ' + stocks[idx].ticker + ' from your watchlist?')) {
+    stocks.splice(idx, 1);
+    renderTable(getFiltered());
+  }
+}
+
+function filterList(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.ftag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable(getFiltered());
+}
+
+function addTicker() {
+  const t = document.getElementById('new-ticker').value.trim().toUpperCase();
+  const name = document.getElementById('new-name').value.trim() || t;
+  const shares = parseFloat(document.getElementById('new-shares').value) || 0;
+  const price = parseFloat(document.getElementById('new-price').value) || 0;
+  if (!t) { alert('Please enter a ticker symbol.'); return; }
+  if (stocks.find(s => s.ticker === t)) { alert(t + ' is already in your watchlist.'); return; }
+  stocks.push({ ticker:t, name, sector:'tech', tier:2, price, shares, status: shares > 0 ? 'owned' : 'watch', starter:false });
+  document.getElementById('new-ticker').value = '';
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-shares').value = '';
+  document.getElementById('new-price').value = '';
+  renderTable(getFiltered());
+}
+
+function updateGoals() {
+  const g1 = parseFloat(document.getElementById('g1-input').value) || 0;
+  const g2 = parseFloat(document.getElementById('g2-input').value) || 0;
+  const g1pct = Math.min(100, (g1 / 900) * 100);
+  const g2pct = Math.min(100, (g2 / 15000) * 100);
+  document.getElementById('g1-bar').style.width = g1pct.toFixed(1) + '%';
+  document.getElementById('g2-bar').style.width = g2pct.toFixed(1) + '%';
+  document.getElementById('g1-saved-lbl').textContent = '$' + g1.toLocaleString();
+  document.getElementById('g2-saved-lbl').textContent = '$' + g2.toLocaleString();
+  document.getElementById('g1-pct').textContent = g1pct.toFixed(0) + '% saved';
+  document.getElementById('g2-pct').textContent = g2pct.toFixed(0) + '% saved';
+}
+
+loadData();
+</script>
+</body>
+</html>
