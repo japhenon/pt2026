@@ -1,0 +1,127 @@
+{
+  "stocks": [
+    {
+      "ticker": "VOO",
+      "name": "Vanguard S&P 500 ETF",
+      "sector": "etf",
+      "tier": 1,
+      "price": 560,
+      "shares": 0,
+      "status": "watch",
+      "starter": true
+    },
+    {
+      "ticker": "NVDA",
+      "name": "Nvidia",
+      "sector": "tech",
+      "tier": 1,
+      "price": 212.58,
+      "shares": 0.1599,
+      "status": "owned",
+      "starter": false
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet (Google)",
+      "sector": "tech",
+      "tier": 1,
+      "price": 390.13,
+      "shares": 0.064,
+      "status": "owned",
+      "starter": false
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Technologies",
+      "sector": "both",
+      "tier": 2,
+      "price": 137.57,
+      "shares": 0.184,
+      "status": "owned",
+      "starter": false
+    },
+    {
+      "ticker": "RTX",
+      "name": "RTX Corporation",
+      "sector": "defense",
+      "tier": 1,
+      "price": 177.48,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "AVAV",
+      "name": "AeroVironment",
+      "sector": "defense",
+      "tier": 2,
+      "price": 214.39,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "GLW",
+      "name": "Corning",
+      "sector": "tech",
+      "tier": 3,
+      "price": 182.97,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "KTOS",
+      "name": "Kratos Defense",
+      "sector": "defense",
+      "tier": 2,
+      "price": 65.19,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "DXYZ",
+      "name": "Destiny Tech100",
+      "sector": "tech",
+      "tier": 2,
+      "price": 54.11,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "RCAT",
+      "name": "Red Cat Holdings",
+      "sector": "defense",
+      "tier": 4,
+      "price": 12.7,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "BBAI",
+      "name": "BigBear.ai",
+      "sector": "both",
+      "tier": 4,
+      "price": 4.82,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    },
+    {
+      "ticker": "UMAC",
+      "name": "Unusual Machines",
+      "sector": "defense",
+      "tier": 4,
+      "price": 30.22,
+      "shares": 0,
+      "status": "watch",
+      "starter": false
+    }
+  ],
+  "g1": "131",
+  "g2": "0",
+  "updated": "May 29, 2026, 01:54 PM"
+}
