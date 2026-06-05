@@ -5,9 +5,9 @@
       "name": "Vanguard S&P 500 ETF",
       "sector": "etf",
       "tier": 1,
-      "price": 560,
-      "shares": 0,
-      "status": "watch",
+      "price": 696.06,
+      "shares": 0.036,
+      "status": "owned",
       "starter": true
     },
     {
@@ -15,7 +15,7 @@
       "name": "Nvidia",
       "sector": "tech",
       "tier": 1,
-      "price": 212.58,
+      "price": 223.29,
       "shares": 0.1599,
       "status": "owned",
       "starter": false
@@ -25,7 +25,7 @@
       "name": "Alphabet (Google)",
       "sector": "tech",
       "tier": 1,
-      "price": 390.13,
+      "price": 372.19,
       "shares": 0.064,
       "status": "owned",
       "starter": false
@@ -35,7 +35,7 @@
       "name": "Palantir Technologies",
       "sector": "both",
       "tier": 2,
-      "price": 137.57,
+      "price": 141.4,
       "shares": 0.184,
       "status": "owned",
       "starter": false
@@ -45,7 +45,7 @@
       "name": "RTX Corporation",
       "sector": "defense",
       "tier": 1,
-      "price": 177.48,
+      "price": 174.52,
       "shares": 0,
       "status": "watch",
       "starter": false
@@ -55,7 +55,7 @@
       "name": "AeroVironment",
       "sector": "defense",
       "tier": 2,
-      "price": 214.39,
+      "price": 201.88,
       "shares": 0,
       "status": "watch",
       "starter": false
@@ -65,7 +65,7 @@
       "name": "Corning",
       "sector": "tech",
       "tier": 3,
-      "price": 182.97,
+      "price": 199.16,
       "shares": 0,
       "status": "watch",
       "starter": false
@@ -75,7 +75,7 @@
       "name": "Kratos Defense",
       "sector": "defense",
       "tier": 2,
-      "price": 65.19,
+      "price": 62.74,
       "shares": 0,
       "status": "watch",
       "starter": false
@@ -121,7 +121,7 @@
       "starter": false
     }
   ],
-  "g1": "131",
+  "g1": "156.11",
   "g2": "0",
-  "updated": "May 29, 2026, 01:54 PM"
+  "updated": "Jun 5, 2026, 08:01 AM"
 }
